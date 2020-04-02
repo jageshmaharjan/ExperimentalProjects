@@ -5,3 +5,6 @@ azurefx_imagesearch/.gitignore
 new_chic/images
 imageSearch/uploads
 imageSearch/image_vectorizer.py
+imageSearch/imgvec
+chat_app/__pycache__/
+grpc_experimental/__pycache__/
