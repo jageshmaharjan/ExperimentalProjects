@@ -1,0 +1,7 @@
+.gitignore
+.idea
+azurefx_imagesearch/.vscode
+azurefx_imagesearch/.gitignore
+new_chic/images
+imageSearch/uploads
+imageSearch/image_vectorizer.py
