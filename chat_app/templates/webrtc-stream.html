@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web audio stream</title>
+</head>
+<body>
+
+ <main>
+     <p>
+         <div id="my-space">
+
+        </div>
+        <button id="btnStart">Start Recording</button> <br><br>
+         <button id="btnStop">Stop recording</button>
+         <button id="btnSend">Send</button><br><br>
+         <input id="msgBox" type="text"/> <button id="btnSendmsg">Send</button>
+     </p>
+
+     <audio id="aud1" controls></audio>
+     <audio id="aud2" controls></audio>
+ </main>
+ <script type="text/javascript">
+     const username = `{{ username }}`;
+ </script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
+    <script type="text/javascript" charset="utf-8">
+
+        let constraintObj = {audio: true};
+
+        navigator.mediaDevices.getUserMedia(constraintObj)
+            .then( (mediaStreamObj) => {
+                let audio = document.getElementById("aud1");
+                if ("srcObject" in audio){
+                    audio.srcObject = mediaStreamObj;
+                }else{
+                    audio.src = window.URL.createObjectURL(mediaStreamObj);
+                }
+                audio.onloadedmetadata = (ev) => {
+                    audio.play();
+                };
+
+                let start = document.getElementById("btnStart");
+                let stop = document.getElementById("btnStop");
+                let audioSave = document.getElementById("aud2");
+                let mediaRecorder = new MediaRecorder(mediaStreamObj);
+                let chunks = [];
+
+                start.addEventListener('click', (ev) => {
+                    mediaRecorder.start();
+                    console.log(mediaRecorder.state);
+                });
+                stop.addEventListener('click', (ev) => {
+                    console.log(mediaRecorder.state);
+                    mediaRecorder.stop();
+                });
+                mediaRecorder.ondataavailable = function (ev) {
+                    chunks.push(ev.data);
+                };
+                mediaRecorder.onstop = (ev) => {
+                    let blob = new Blob(chunks, {'type': 'audio/mp3'});
+                    chunks = [];
+                    let audioURL = window.URL.createObjectURL(blob);
+                    audioSave.src = audioURL;
+                };
+            }).catch(function (err) {
+                console.log(err.name, err.message);
+        });
+
+        document.addEventListener('DOMContentLoaded', () =>{
+
+            var socket = io.connect('http://' + document.domain + ':' + location.port);
+            socket.on('connect', () => {
+                socket.send('I am connected!');
+                // socket.emit('my event', {data: 'I am connected!'})
+            });
+
+            socket.on('message', data => {
+                // console.log(`Message received: ${data}`);
+                const p = document.createElement('p');
+                const br = document.createElement('br');
+                p.innerHTML = data;
+                document.querySelector('#my-space').append(p);
+
+            });
+
+            socket.on('some-event', data => {
+                console.log(data)
+            });
+
+            document.querySelector('#btnSendmsg').onclick = () => {
+                var msg  = {'msg' : document.querySelector('#msgBox').value, 'username': 'jugs'};
+                socket.send(msg.username + ' : ' + msg.msg)
+            };
+
+            document.getElementById('btnSend').onclick = () => {
+                const audio = document.getElementById('aud2');
+                var msg  = {'msg' : document.querySelector('#msgBox').value, 'username': 'jugs'};
+                socket.send('sending audio');
+            }
+        });
+
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,67 @@
+Tattoos & Body Art	0
+Kitchen & Dining & Bar	1
+Nail Art	2
+Pet Supplies	3
+Home Decor	4
+Housekeeping & Organization	5
+Home Improvement	6
+Shoes Accessories	7
+Outerwear & Sweaters	8
+Plus Size	9
+Makeup	10
+Men's Accessories	11
+Jewelry Supplies	12
+Women Accessories	13
+Garden & Outdoor	14
+Family Fun Toy	15
+Lingerie	16
+Home Textile	17
+Bathroom	18
+Hair Care	19
+Skin Care	20
+Women's Jewelry	21
+Men's Jewelry	22
+Women Women's Bags	23
+Women Women's Shoes	24
+Athleisure	25
+Kid's Shoes	26
+Couple Jewelry	27
+Tops	28
+Dresses	29
+Men's Bags	30
+Masquerade & Cosplay	31
+Garden & Furniture& Outdoor Living	32
+Tees & Tank Top	33
+Baby & Moms	34
+Bottoms	35
+Accessories	36
+Kid's Bags	37
+Coats & Jackets	38
+Pants & Shorts	39
+Men's Shoes	40
+Sweaters & Cardigans	41
+Hair Wigs & Extensions	42
+Underwear	43
+Hoodies & Sweatshirt	44
+Swimwear	45
+DIY Jewelry	46
+Fragrance	47
+Wedding & Events	48
+Boys Clothing	49
+Girls Clothing	50
+Sleepwear	51
+Festival & Party Supplies	52
+Swimsuits & Beach Shorts	53
+Swimwear & Board Shorts	54
+Suit & Blazers	55
+Shirts	56
+Personal Care	57
+Watches	58
+Jewelry Sets	59
+Jeans	60
+Hair Accessories	61
+Shavers & Hair Removal	62
+Brooches & Pins	63
+Classic Fine Jewelry	64
+Pendants	65
+Fine Jewelry	66
