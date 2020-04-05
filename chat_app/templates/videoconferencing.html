@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Video Conferenceing</title>
+</head>
+    <script src="https://rtcmulticonnection.herokuapp.com/dist/RTCMultiConnection.min.js"></script>
+    <script src="https://rtcmulticonnection.herokuapp.com/socket.io/socket.io.js"></script>
+<body>
+    <div id="message-display-area"><hr>
+    </div>
+    <input id="msgData" placeholder="Type Your Message here..">
+    <button id="sendmsg">Send</button>
+    <hr>
+
+    <input id="txt-roomid" placeholder="Unique Room Id">
+    <button id="btn-open-or-join-room">
+        Open or Join Room
+    </button>
+    <hr>
+
+    <div id="local-video-container">
+    </div>
+    <div id="remote-videos-container">
+
+    </div>
+
+<script>
+    var connection = new RTCMultiConnection();
+    connection.socketURL = 'https://rtcmulticonnection.herokuapp.com:443/';
+
+    connection.seesion = {
+        data: true,
+        audio: true,
+        video: true,
+    };
+
+    connection.sdpConstraints.mandatory = {
+        OfferToReceiveAudio: true,
+        OfferToReceiveVideo: true
+    };
+
+    var localvideoContainer = document.getElementById('local-video-container');
+    var remotevideoContainer = document.getElementById('remote-videos-container');
+    connection.onstream = function (event) {
+        var video = event.mediaElement;
+        event.preventDefault();
+        if (event.type === 'local'){
+            localvideoContainer.appendChild(video);
+        }
+        if (event.type === 'remote'){
+            remotevideoContainer.appendChild(video);
+        }
+    };
+
+    var roomid = document.getElementById('txt-roomid');
+    // roomid.value = (Math.random() * 1000).toString().replace('.', '');
+    roomid.value = connection.token();
+
+    document.getElementById('btn-open-or-join-room').onclick = function () {
+
+        this.disabled = true;
+        connection.openOrJoin(roomid.value || 'predefined-roomid')
+    };
+
+    var messageContainer = document.getElementById('message-display-area');
+    var messageinput = document.getElementById('msgData');
+    var sendBtn = document.getElementById('sendmsg');
+    connection.onopen = function (event) {
+        var msg = connection.send('Hello Everyone');
+        console.log("hello everyone!");
+        messageContainer.innerHTML = msg.value;
+    };
+    connection.onmessage = function (event) {
+
+        var p = document.createElement('p');
+        p.innerHTML = event.data;
+        messageContainer.append(p);
+    }
+
+</script>
+</body>
+</html>
