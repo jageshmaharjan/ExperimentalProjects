@@ -83,6 +83,12 @@ def send_room_message(message):
          room=message['room'])
 
 
+@socketio.on('my_room_audio', namespace='/test')
+def send_room_audio(message):
+    session['receive_count'] = session.get('receive_count', 0) + 1
+    emit('my_response', {'data': message['data'], 'count':session['receive_count']}, room=message['room'])
+
+
 @socketio.on('disconnect_request', namespace='/test')
 def disconnect_request():
     @copy_current_request_context
@@ -118,4 +124,4 @@ def test_disconnect():
 
 
 if __name__ == '__main__':
-    socketio.run(app, debug=True)
+    socketio.run(app, debug=True, host='0.0.0.0', port=3000)

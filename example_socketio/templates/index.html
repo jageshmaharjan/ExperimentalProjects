@@ -5,6 +5,48 @@
     <script src="//code.jquery.com/jquery-1.12.4.min.js" integrity="sha256-ZosEbRLbNQzLpnKIkEdrPv7lOy9C27hHQ+Xp8a4MxAQ=" crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js" integrity="sha256-yr4fRk/GU1ehYJPAs8P4JlTgu0Hdsp4ZKrx8bDEDC3I=" crossorigin="anonymous"></script>
     <script type="text/javascript" charset="utf-8">
+
+        let constrainObj = {audio: true};
+
+        navigator.mediaDevices.getUserMedia(constrainObj)
+            .then((mediaStreamObj) => {
+                let audio = document.getElementById("audio1");
+                if ("srcObject" in audio){
+                    audio.srcObject = mediaStreamObj;
+                }else {
+                    audio.src = window.URL.createObjectURL(mediaStreamObj);
+                }
+                audio.onloadedmetadata = (ev) => {
+                    audio.play();
+                };
+
+                let start = document.getElementById("btnRec");
+                let stop = document.getElementById('btnStop');
+                let audioSave = document.getElementById("audio2");
+                let mediaRecorder = new MediaRecorder(mediaStreamObj);
+                let chunks = [];
+
+                start.addEventListener('click', (ev) => {
+                    mediaRecorder.start();
+                    console.log(mediaRecorder.state);
+                });
+                stop.addEventListener('click', (ev) => {
+                    console.log(mediaRecorder.state);
+                    mediaRecorder.stop();
+                });
+                mediaRecorder.ondataavailable = (ev) => {
+                    chunks.push(ev.data);
+                };
+                mediaRecorder.onstop = (ev) => {
+                    let blob = new Blob(chunks, {'type': 'audio/mp3'});
+                    chunks = [];
+                    let audioURL = window.URL.createObjectURL(blob);
+                    audioSave.src = audioURL;
+                };
+            }).catch((err) => {
+                console.log(err.name, err.message);
+        });
+
         $(document).ready(function() {
             // Use a "/test" namespace.
             // An application can open a connection on multiple namespaces, and
@@ -81,6 +123,24 @@
                 socket.emit('my_room_event', {room: $('#room_name').val(), data: $('#room_data').val()});
                 return false;
             });
+            $('form#send_audio_room').submit((event) => {
+                const file = new File([blob], name);
+                let formData = new FormData();
+                formData.append('audio', file);
+                let req = new XMLHttpRequest();
+                req.onreadystatechange = function(e) {
+                    if (req.readyState == 4 && req.status == 200) {
+                        console.log(req.responseText);
+                    }
+                };
+                req.open("POST", 'http://18.162.113.148:3005/deepinfer');
+                req.send(formData);
+                // socket.emit('my_room_audio', {room: $('#room_name_audio').val(), data: $('#audio2').val()});
+                // return false;
+                // const audio = document.getElementById('audio2');
+                // var msg  = {'msg' : document.querySelector('#msgBox').value, 'username': 'jugs'};
+                // socket.send('sending audio');
+            });
             $('form#close').submit(function(event) {
                 socket.emit('close_room', {room: $('#close_room').val()});
                 return false;
@@ -121,6 +181,14 @@
     <form id="close" method="POST" action="#">
         <input type="text" name="close_room" id="close_room" placeholder="Room Name">
         <input type="submit" value="Close Room">
+    </form>
+    <form id="send_audio_room" method="post" action="#">
+        <input type="text" name="room_name_audio" id="room_name_audio" placeholder="Room Name">
+        <input type="button" id="btnRec" value="Record">
+        <audio id="audio1" controls> </audio>
+        <audio id="audio2" controls></audio>
+        <input type="button" id="btnStop" value="Stop">
+        <input type="button" id="audio_send" value="send to room">
     </form>
     <form id="disconnect" method="POST" action="#">
         <input type="submit" value="Disconnect">
